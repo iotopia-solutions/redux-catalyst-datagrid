@@ -5,6 +5,7 @@ export default class DataGrid extends Component {
     propTypes: {
         data: React.PropTypes.array,
         columns: React.PropTypes.array,
+        columnNames: React.PropTypes.array,
         row: React.PropTypes.func,
         children: React.PropTypes.object
     },
@@ -18,40 +19,30 @@ export default class DataGrid extends Component {
     },
 
     render() {
-        var data = this.props.data;
-        var columns = this.props.columns;
-        var rowProps = this.props.row || noop;
+        const data = this.props.data || [];
+        const columns = this.props.columns || [];
+        const columnNames = this.props.columnNames || {};
+        const rowProps = this.props.row || noop;
 
         return (
             <table {...props}>
-                <thead><Columns columns={columns} /></thead>
+                <thead><Columns columnNames={columnNames} columns={columns} /></thead>
                 <tbody>
                     {data.map((row, i) => <tr key={'datagrid-row' + i} {...rowProps(row, i)}>{
                         columns.map((column, j) => {
-                            var property = column.property;
-                            var value = row[property];
-                            var cell = column.cell || [identityFunc];
-                            var content;
+                            const property = column.property;
+                            const value = row[property];
+                            const cell = column.cell || [identityFunc];
+                            let content = undefined;
 
                             cell = typeof cell === 'function' ? [cell] : cell;
 
-                            content = reduce(cell, (v, fn) => {
-                                if(React.isValidElement(v.value)) {
-                                    return v;
-                                }
-
-                                var val = fn(v.value, data, i, property);
-
-                                if(!isPlainObject(val) || val.value === undefined) {
-                                    // formatter shortcut
-                                    val = {value: val};
-                                }
-
-                                return {
-                                    value: val.value === undefined ? v.value : val.value,
-                                    props: Object.assign({}, v.props, val.props)
-                                };
-                            }, {value: value, props: {}});
+                            if (typeof cell === 'function') {
+                                content = cell(value, data, i, property);
+                            }
+                            else {
+                                content = value;
+                            }
 
                             content = content || {};
 

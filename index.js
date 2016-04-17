@@ -10,11 +10,13 @@ class App extends React.Component {
 
   render() {
 
-    const data = [['0, 0', '0, 1', '0, 2'], ['1, 0', '1, 1', '1, 2'], ['2,0', '2,1', '2,2']];
-    const columns = ['First', 'Second', 'Third'];
+    const data = [{revenue: 1000, costs: 500, misc: 'not sure'}, {revenue: 1200, costs: 600, misc: ''}];
+
+    const columns = ['revenue', 'costs', 'misc'];
+    const columnNames = ['Revenue', 'My Costs', 'Misc.'];
 
     return(
-      <DataGrid data={data} columns={columns} />
+      <DataGrid data={data} columns={columns} columnNames={columnNames} />
     )
   }
 }
